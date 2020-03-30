@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-use App\Kernel\Context\Tenant;
+use App\Kernel\Tenant\Tenant;
 use Hyperf\Amqp\Message\ProducerMessageInterface;
 use Hyperf\Amqp\Producer;
 use Hyperf\AsyncQueue\Driver\DriverFactory;

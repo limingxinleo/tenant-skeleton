@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-namespace App\Kernel\Context;
+namespace App\Kernel\Tenant;
 
 use Hyperf\Database\ConnectionInterface;
 use Hyperf\Utils\Context;

@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace App\Listener;
 
+use App\Kernel\Tenant\AsyncMessage;
+use App\Kernel\Tenant\Tenant;
 use Hyperf\AsyncQueue\AnnotationJob;
 use Hyperf\AsyncQueue\Event\AfterHandle;
 use Hyperf\AsyncQueue\Event\BeforeHandle;
@@ -57,6 +59,9 @@ class QueueHandleListener implements ListenerInterface
 
             switch (true) {
                 case $event instanceof BeforeHandle:
+                    if ($event->message instanceof AsyncMessage) {
+                        Tenant::instance()->init($event->message->id);
+                    }
                     $this->logger->info(sprintf('[%s] Processing %s.', $date, $jobClass));
                     break;
                 case $event instanceof AfterHandle:

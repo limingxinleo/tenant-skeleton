@@ -10,7 +10,15 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-return [
-    // Hyperf\Contract\StdoutLoggerInterface::class => App\Kernel\Log\LoggerFactory::class,
-    Hyperf\Database\ConnectionResolverInterface::class => App\Kernel\Tenant\ConnectionResolver::class,
-];
+namespace App\Job;
+
+use App\Kernel\Tenant\Tenant;
+use Hyperf\AsyncQueue\Job;
+
+class TenantJob extends Job
+{
+    public function handle()
+    {
+        var_dump(Tenant::instance()->getId());
+    }
+}

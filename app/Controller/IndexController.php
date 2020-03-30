@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Job\TenantJob;
 use App\Model\User;
 use Swoole\Coroutine\Channel;
 
@@ -27,6 +28,8 @@ class IndexController extends Controller
         });
 
         $model2 = $channel->pop();
+
+        queue_push(new TenantJob());
 
         return $this->response->success([
             $model->toArray(),
