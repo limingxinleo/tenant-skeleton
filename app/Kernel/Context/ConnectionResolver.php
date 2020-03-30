@@ -32,7 +32,7 @@ class ConnectionResolver extends \Hyperf\DbConnection\ConnectionResolver
         }
 
         $id = Tenant::instance()->getId();
-        if (! Str::endsWith($name, '_' . $id)) {
+        if (! Str::contains($name, '_')) {
             $name = $name . '_' . $id;
         }
 

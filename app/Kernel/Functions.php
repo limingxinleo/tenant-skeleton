@@ -10,6 +10,7 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
+use App\Kernel\Context\Tenant;
 use Hyperf\Amqp\Message\ProducerMessageInterface;
 use Hyperf\Amqp\Producer;
 use Hyperf\AsyncQueue\Driver\DriverFactory;
@@ -62,5 +63,17 @@ if (! function_exists('amqp_produce')) {
     function amqp_produce(ProducerMessageInterface $message): bool
     {
         return di()->get(Producer::class)->produce($message, true);
+    }
+}
+
+if (! function_exists('go')) {
+    function go(callable $callable)
+    {
+        $id = Tenant::instance()->getId();
+
+        Swoole\Coroutine::create(function () use ($id, $callable) {
+            Tenant::instance()->init($id);
+            call($callable);
+        });
     }
 }

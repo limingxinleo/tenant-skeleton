@@ -36,13 +36,15 @@ class Tenant
         $this->container = ApplicationContext::getContainer();
     }
 
-    public function init()
+    public function init($id = null)
     {
-        $request = $this->container->get(RequestInterface::class);
+        if (empty($id)) {
+            $request = $this->container->get(RequestInterface::class);
+            $id = $request->header('X-TENANT-ID');
+            $id = $id % 2 + 1;
+        }
 
-        $id = $request->header('X-TENANT-ID');
-
-        $this->id = $id % 2 + 1;
+        $this->id = $id;
     }
 
     public function getId()

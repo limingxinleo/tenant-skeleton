@@ -13,13 +13,24 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\User;
+use Swoole\Coroutine\Channel;
 
 class IndexController extends Controller
 {
     public function index()
     {
         $model = User::query()->find(1);
+        $channel = new Channel(1);
+        go(function () use ($channel) {
+            $model = User::query()->find(1);
+            $channel->push($model);
+        });
 
-        return $this->response->success($model->toArray());
+        $model2 = $channel->pop();
+
+        return $this->response->success([
+            $model->toArray(),
+            $model2->toArray(),
+        ]);
     }
 }
