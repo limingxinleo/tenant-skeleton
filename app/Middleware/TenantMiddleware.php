@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
+use App\Kernel\Context\Tenant;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -32,6 +33,8 @@ class TenantMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        Tenant::instance()->init();
+
         return $handler->handle($request);
     }
 }
