@@ -5,11 +5,10 @@ declare(strict_types=1);
  * This file is part of Hyperf.
  *
  * @link     https://www.hyperf.io
- * @document https://doc.hyperf.io
+ * @document https://hyperf.wiki
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 use App\Kernel\Tenant\Tenant;
 use Hyperf\Amqp\Message\ProducerMessageInterface;
 use Hyperf\Amqp\Producer;
@@ -21,10 +20,9 @@ use Hyperf\Utils\ApplicationContext;
 if (! function_exists('di')) {
     /**
      * Finds an entry of the container by its identifier and returns it.
-     * @param null|mixed $id
      * @return mixed|\Psr\Container\ContainerInterface
      */
-    function di($id = null)
+    function di(?string $id = null)
     {
         $container = ApplicationContext::getContainer();
         if ($id) {
@@ -53,16 +51,6 @@ if (! function_exists('queue_push')) {
     {
         $driver = di()->get(DriverFactory::class)->get($key);
         return $driver->push($job, $delay);
-    }
-}
-
-if (! function_exists('amqp_produce')) {
-    /**
-     * Produce a amqp message.
-     */
-    function amqp_produce(ProducerMessageInterface $message): bool
-    {
-        return di()->get(Producer::class)->produce($message, true);
     }
 }
 

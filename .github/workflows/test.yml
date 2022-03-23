@@ -1,0 +1,47 @@
+name: PHPUnit for Hyperf
+
+on: [ push, pull_request ]
+
+jobs:
+  ci:
+    name: Test on PHP ${{ matrix.php-version }} Swoole ${{ matrix.swoole-version }}
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        php-version: [ '8.0' ]
+        swoole-version: [ 'v4.5.11', 'v4.6.7', 'v4.7.1', 'v4.8.8', 'master' ]
+      max-parallel: 5
+    env:
+      SW_VERSION: ${{ matrix.swoole-version }}
+      PHP_VERSION: ${{ matrix.php-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: phpize
+          ini-values: opcache.enable_cli=0
+          coverage: none
+          extensions: pdo, pdo_mysql, redis
+      - name: Setup Swoole
+        run: ./.github/swoole.install.sh
+      - name: Setup MySQL ...
+        run: |
+          docker run -e TZ=Asia/Shanghai -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_ROOT_HOST=% -e MYSQL_DATABASE=hyperf -v $PWD/.github/init.sql:/docker-entrypoint-initdb.d/init.sql -d -p 3306:3306 --name mysql mysql/mysql-server:5.7
+          docker run -p 6379:6379 -d --name redis redis:latest
+      - name: Show Environment
+        run: |
+          php -v
+          php -m
+          php -i
+      - name: Setup Packages
+        run: composer update -o
+      - name: Run Test Cases
+        run: |
+          cp .env.example .env
+          vendor/bin/php-cs-fixer fix --dry-run
+          composer analyse
+          composer test

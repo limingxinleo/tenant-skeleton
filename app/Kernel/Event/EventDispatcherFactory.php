@@ -9,15 +9,17 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-namespace App\Kernel\Log;
+namespace App\Kernel\Event;
 
-use Hyperf\Logger\LoggerFactory as HyperfLoggerFactory;
+use Hyperf\Event\EventDispatcher;
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
 
-class LoggerFactory
+class EventDispatcherFactory
 {
     public function __invoke(ContainerInterface $container)
     {
-        return $container->get(HyperfLoggerFactory::class)->make();
+        $listeners = $container->get(ListenerProviderInterface::class);
+        return new EventDispatcher($listeners);
     }
 }
