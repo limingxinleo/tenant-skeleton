@@ -9,7 +9,6 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 $config = [];
 foreach ([1, 2] as $id) {
     $config['default_' . $id] = [
