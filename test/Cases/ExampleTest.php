@@ -14,8 +14,15 @@ namespace HyperfTest\Cases;
 use App\Kernel\Context\Coroutine;
 use App\Kernel\Log\AppendRequestIdProcessor;
 use Hyperf\Context\Context;
+use Hyperf\Di\Definition\FactoryDefinition;
+use Hyperf\Di\Resolver\FactoryResolver;
+use Hyperf\Di\Resolver\ResolverDispatcher;
 use Hyperf\Engine\Channel;
+use Hyperf\Support\Reflection\ClassInvoker;
 use HyperfTest\HttpTestCase;
+use Mockery;
+use Psr\Container\ContainerInterface;
+use Throwable;
 
 /**
  * @internal
@@ -52,7 +59,7 @@ class ExampleTest extends HttpTestCase
             try {
                 $all = Context::getContainer();
                 $pool->push((array) $all);
-            } catch (\Throwable $exception) {
+            } catch (Throwable $exception) {
                 $pool->push(false);
             }
         });
@@ -60,5 +67,18 @@ class ExampleTest extends HttpTestCase
         $data = $pool->pop();
         $this->assertIsArray($data);
         $this->assertSame($id, $data[AppendRequestIdProcessor::REQUEST_ID]);
+    }
+
+    public function testGetDefinitionResolver()
+    {
+        $container = Mockery::mock(ContainerInterface::class);
+        $dispatcher = new ClassInvoker(new ResolverDispatcher($container));
+        $resolver = $dispatcher->getDefinitionResolver(Mockery::mock(FactoryDefinition::class));
+        $this->assertInstanceOf(FactoryResolver::class, $resolver);
+        $this->assertSame($resolver, $dispatcher->factoryResolver);
+
+        $resolver2 = $dispatcher->getDefinitionResolver(Mockery::mock(FactoryDefinition::class));
+        $this->assertInstanceOf(FactoryResolver::class, $resolver2);
+        $this->assertSame($resolver2, $dispatcher->factoryResolver);
     }
 }

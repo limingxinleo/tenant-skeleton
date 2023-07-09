@@ -12,8 +12,8 @@ declare(strict_types=1);
 use App\Kernel\Tenant\Tenant;
 use Hyperf\AsyncQueue\Driver\DriverFactory;
 use Hyperf\AsyncQueue\JobInterface;
+use Hyperf\Context\ApplicationContext;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
-use Hyperf\Utils\ApplicationContext;
 
 if (! function_exists('di')) {
     /**
