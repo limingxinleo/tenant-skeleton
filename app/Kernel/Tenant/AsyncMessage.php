@@ -12,14 +12,13 @@ declare(strict_types=1);
 namespace App\Kernel\Tenant;
 
 use Hyperf\AsyncQueue\JobInterface;
-use Hyperf\AsyncQueue\Message;
+use Hyperf\AsyncQueue\JobMessage;
+use Hyperf\Contract\CompressInterface;
+use Hyperf\Contract\UnCompressInterface;
 
-class AsyncMessage extends Message
+class AsyncMessage extends JobMessage
 {
-    /**
-     * @var int
-     */
-    public $id;
+    public int $id;
 
     public function __construct(JobInterface $job)
     {
@@ -29,18 +28,22 @@ class AsyncMessage extends Message
         }
     }
 
-    public function serialize()
+    public function __serialize(): array
     {
-        return serialize([
-            $this->job,
-            $this->attempts,
-            $this->id,
-        ]);
+        if ($this->job instanceof CompressInterface) {
+            /* @phpstan-ignore-next-line */
+            $this->job = $this->job->compress();
+        }
+
+        return [$this->job, $this->attempts, $this->id];
     }
 
-    public function unserialize($serialized)
+    public function __unserialize(array $data): void
     {
-        [$job, $attempts, $id] = unserialize($serialized);
+        [$job, $attempts, $id] = $data;
+        if ($job instanceof UnCompressInterface) {
+            $job = $job->uncompress();
+        }
 
         $this->job = $job;
         $this->attempts = $attempts;

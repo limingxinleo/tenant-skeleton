@@ -11,20 +11,17 @@ declare(strict_types=1);
  */
 namespace App\Kernel\Tenant;
 
+use Hyperf\Context\Context;
+use Hyperf\Coroutine\Coroutine;
 use Hyperf\Database\ConnectionInterface;
-use Hyperf\Utils\Context;
-use Hyperf\Utils\Coroutine;
-use Hyperf\Utils\Str;
+use Hyperf\Stringable\Str;
 
 class ConnectionResolver extends \Hyperf\DbConnection\ConnectionResolver
 {
     /**
      * Get a database connection instance.
-     *
-     * @param string $name
-     * @return ConnectionInterface
      */
-    public function connection($name = null)
+    public function connection(?string $name = null): ConnectionInterface
     {
         if (is_null($name)) {
             $name = $this->getDefaultConnection();

@@ -9,7 +9,6 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-use App\Kernel\Tenant\Tenant;
 use Hyperf\AsyncQueue\Driver\DriverFactory;
 use Hyperf\AsyncQueue\JobInterface;
 use Hyperf\Context\ApplicationContext;
@@ -49,17 +48,5 @@ if (! function_exists('queue_push')) {
     {
         $driver = di()->get(DriverFactory::class)->get($key);
         return $driver->push($job, $delay);
-    }
-}
-
-if (! function_exists('go')) {
-    function go(callable $callable)
-    {
-        $id = Tenant::instance()->getId();
-
-        Swoole\Coroutine::create(function () use ($id, $callable) {
-            Tenant::instance()->init($id);
-            call($callable);
-        });
     }
 }

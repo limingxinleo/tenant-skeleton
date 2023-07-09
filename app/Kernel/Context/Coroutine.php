@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace App\Kernel\Context;
 
 use App\Kernel\Log\AppendRequestIdProcessor;
+use App\Kernel\Tenant\Tenant;
 use Hyperf\Context\Context;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Engine\Coroutine as Co;
@@ -36,8 +37,10 @@ class Coroutine
     public function create(callable $callable): int
     {
         $id = Co::id();
-        $coroutine = Co::create(function () use ($callable, $id) {
+        $tenant = Tenant::instance()->getId();
+        $coroutine = Co::create(function () use ($callable, $id, $tenant) {
             try {
+                Tenant::instance()->init($tenant);
                 // Shouldn't copy all contexts to avoid socket already been bound to another coroutine.
                 Context::copy($id, [
                     AppendRequestIdProcessor::REQUEST_ID,
